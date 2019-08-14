@@ -1,0 +1,16 @@
+{
+  "openapi": "3.0.0",
+  "servers": [
+    {
+      "description": "fixme",
+      "url": "http://fixme"
+    }
+  ],
+  "info": {
+    "version": "0.0.1",
+    "title": "Service request-generator"
+  },
+  "tags": [],
+  "paths": {},
+  "components": {}
+}
