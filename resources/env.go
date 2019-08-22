@@ -7,8 +7,10 @@ import (
 )
 
 type Env struct {
-	ServiceName string `envconfig:"APP_SERVICENAME" default:"request-generator"`
-	PodName     string `envconfig:"APP_PODNAME" default:"podname"`
+	ServiceName 		string `envconfig:"APP_SERVICENAME" default:"request-generator"`
+	PodName     		string `envconfig:"APP_PODNAME" default:"podname"`
+	Etcd      			string `envconfig:"APP_ETCD" default:"http-01.dock.cats.devel.tutu.ru:8000"`
+	ElasticSearchUrlEnv string `envconfig:"ELASTICSEARCH_URL" default:"http://elastic-logs.devel.tutu.ru:9200"`
 }
 
 func init() {

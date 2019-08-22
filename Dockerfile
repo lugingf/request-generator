@@ -20,6 +20,7 @@ COPY --from=build /bin/request-generator /app/request-generator
 COPY --from=build /usr/share/zoneinfo /usr/share/zoneinfo
 COPY ./openapi.json /openapi.json
 RUN apk --update add ca-certificates
+ENV TZ "Europe/Moscow"
 ENV PORT 7784
 EXPOSE $PORT
 ENTRYPOINT /app/request-generator
