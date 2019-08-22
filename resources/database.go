@@ -1,7 +1,6 @@
 package resources
 
 import (
-	"database/sql"
 	"fmt"
 	_ "github.com/mattn/go-sqlite3"
 	"os"
@@ -26,11 +25,11 @@ func (r *Resources) insertUrls() error {
 }
 
 func (r *Resources) InitDb() error {
-	r.Db, _ = sql.Open("sqlite3", "./myDb.db")
-	statement, _ := r.Db.Prepare("CREATE TABLE IF NOT EXISTS urls (id INTEGER PRIMARY KEY, url varchar UNIQUE)")
-	statement.Exec()
-	truncate, _ := r.Db.Prepare("DELETE FROM urls")
-	truncate.Exec()
+	//r.Db, _ = sql.Open("sqlite3", "./myDb.db")
+	//statement, _ := r.Db.Prepare("CREATE TABLE IF NOT EXISTS urls (id INTEGER PRIMARY KEY, url varchar UNIQUE)")
+	//statement.Exec()
+	//truncate, _ := r.Db.Prepare("DELETE FROM urls")
+	//truncate.Exec()
 
 	//r.insertUrls()
 
