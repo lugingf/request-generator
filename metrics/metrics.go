@@ -2,20 +2,28 @@ package metrics
 
 import (
 	"github.com/prometheus/client_golang/prometheus"
+	"strconv"
+	"time"
 )
 
-const NginxErrorWeightSumMetricName string = "errorcontrol_nginx_500_error_weight_sum"
-const NginxErrorCounterMetricName string = "errorcontrol_nginx_error_count"
+const SearchResponsesDurationMetricName string = "ocws_request_generator_search_responses_duration"
+const SearchResponsesDurationMetricLabelTarget string = "target"
+const SearchResponsesDurationMetricLabelResponseCode string = "response_code"
 
-var NginxErrorWeightSumCounterVec *prometheus.CounterVec
-var NginxErrorCounterVec *prometheus.CounterVec
+var SearchResponsesDurationSummaryVec *prometheus.SummaryVec
 
 func Init() {
-	NginxErrorWeightSumCounterVec = prometheus.NewCounterVec(prometheus.CounterOpts{Name: NginxErrorWeightSumMetricName},
-	[]string{"rule_name"})
-	NginxErrorCounterVec = prometheus.NewCounterVec(prometheus.CounterOpts{Name: NginxErrorCounterMetricName},
-		[]string{"rule_name"})
+	SearchResponsesDurationSummaryVec = prometheus.NewSummaryVec(
+		prometheus.SummaryOpts{
+			Name: SearchResponsesDurationMetricName,
+			Objectives: map[float64]float64{0.5: 0.05, 0.9: 0.01, 0.95: 0.005, 0.99: 0.001},
+		},
+		[]string{SearchResponsesDurationMetricLabelTarget, SearchResponsesDurationMetricLabelResponseCode},
+		)
 
-	prometheus.MustRegister(NginxErrorWeightSumCounterVec)
-	prometheus.MustRegister(NginxErrorCounterVec)
+	prometheus.MustRegister(SearchResponsesDurationSummaryVec)
+}
+
+func SendDurationMetric(url string, statusCode int, startTime time.Time)  {
+	SearchResponsesDurationSummaryVec.With(prometheus.Labels{SearchResponsesDurationMetricLabelTarget: url, SearchResponsesDurationMetricLabelResponseCode: strconv.Itoa(statusCode)}).Observe(time.Since(startTime).Seconds())
 }
