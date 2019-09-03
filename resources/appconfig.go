@@ -19,6 +19,7 @@ type GeneratorConfig struct {
 	GenRequestTimeout string
 	LogResponsesEnabled string
 	UrlTargetList []string
+	IsBadRequestsEnabled string
 }
 
 
@@ -33,6 +34,9 @@ func (r *Resources) GetConfig() *GeneratorConfig {
 		}
 		if strings.HasSuffix(node.Key, "LogResponsesEnabled") {
 			genConf.LogResponsesEnabled = node.Value
+		}
+		if strings.HasSuffix(node.Key, "IsBadRequestsEnabled") {
+			genConf.IsBadRequestsEnabled = node.Value
 		}
 		if strings.HasSuffix(node.Key, "GenRequestTimeout") {
 			genConf.GenRequestTimeout = node.Value
@@ -49,7 +53,7 @@ func (r *Resources) GetConfig() *GeneratorConfig {
 	return &genConf
 }
 
-func (r *Resources) UpdateConfig() chan ChangedNode {
+func (r *Resources) InitEtcdConfigWatcher() chan ChangedNode {
 	ch := make(chan ChangedNode)
 	log.Logger.Info().Msg("ETCD config watcher starting")
 	go func() {

@@ -37,7 +37,7 @@ func main() {
 	})
 
 	genConfig := res.GetConfig()
-	ch := res.UpdateConfig()
+	ch := res.InitEtcdConfigWatcher()
 
 	g := generators.RequestGenerator{Config: genConfig}
 	go g.MakeGen(ch)

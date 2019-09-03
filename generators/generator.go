@@ -39,6 +39,9 @@ func (g *RequestGenerator) MakeGen(ch chan resources.ChangedNode) {
 			case "LogResponsesEnabled":
 				g.Config.LogResponsesEnabled = changedNode.Value
 				log.Logger.Info().Msg(configChangedMessage + "LogResponsesEnabled set to " + g.Config.IsEnabled)
+			case "IsBadRequestsEnabled":
+				g.Config.IsBadRequestsEnabled = changedNode.Value
+				log.Logger.Info().Msg(configChangedMessage + "IsBadRequestsEnabled set to " + g.Config.IsEnabled)
 			case "rpm":
 				g.Config.Rpm = changedNode.Value
 				rpm = getDurationTypeFromString(g.Config.Rpm)
@@ -71,8 +74,13 @@ func (g *RequestGenerator) doRequest(client *http.Client, urlData []string) {
 
 			query := request.URL.Query()
 			from, to, departureDate := getRequestData()
-			query.Add("from", strconv.Itoa(from))
-			query.Add("to", strconv.Itoa(to))
+
+			if g.Config.IsBadRequestsEnabled == "1" {
+				from, to, departureDate = getFailedRequestData()
+			}
+
+			query.Add("from", from)
+			query.Add("to", to)
 			query.Add("date", departureDate)
 			request.URL.RawQuery = query.Encode()
 
@@ -110,7 +118,20 @@ func (g *RequestGenerator) doRequest(client *http.Client, urlData []string) {
 	}
 }
 
-func getRequestData() (int, int, string) {
+func getFailedRequestData() (string, string, string)  {
+	return getRandomStringForRequest(), getRandomStringForRequest(), getRandomStringForRequest()
+}
+
+func getRandomStringForRequest() string {
+	var letter = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")
+	b := make([]rune, 5)
+	for i := range b {
+		b[i] = letter[rand.Intn(len(letter))]
+	}
+	return string(b)
+}
+
+func getRequestData() (string, string, string) {
 	var citiesCount = 10
 
 	departureTimestamp := rand.Int63n(60*60*24*(45)) + time.Now().Unix() + 60*60*24*14
@@ -119,7 +140,7 @@ func getRequestData() (int, int, string) {
 	departureId := rand.Intn(citiesCount - 1) + 1
 	arrivalId := rand.Intn(citiesCount -1) + 1
 
-	return departureId, arrivalId, departureDate
+	return strconv.Itoa(departureId), strconv.Itoa(arrivalId), departureDate
 }
 
 func getDurationTypeFromString(strValue string) time.Duration {

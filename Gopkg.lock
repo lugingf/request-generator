@@ -338,7 +338,6 @@
   input-imports = [
     "github.com/coreos/etcd/client",
     "github.com/kelseyhightower/envconfig",
-    "github.com/pkg/errors",
     "github.com/prometheus/client_golang/prometheus",
     "go.uber.org/automaxprocs/maxprocs",
     "golang.org/x/sync/errgroup",
