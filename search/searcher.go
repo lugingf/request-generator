@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"net"
 	"net/http"
+	"stash.tutu.ru/opscore-workshop-admin/request-generator/metrics"
 	"strconv"
 	"strings"
 	"stash.tutu.ru/golang/log"
@@ -71,7 +72,7 @@ func GetSearchResult(client *http.Client, params Params, searchUrl string) (int,
 		}
 
 		offersCount := len(searchResult.Offers)
-		fmt.Println("RESULT: ", searchResult)
+		metrics.SendOffersCountMetric(searchUrl, float64(offersCount))
 		log.Logger.Info().Msg("Offers count: " + strconv.Itoa(offersCount))
 
 		defer resp.Body.Close()
