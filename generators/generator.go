@@ -75,7 +75,7 @@ func (g *RequestGenerator) doRequest(client *http.Client, urlData []string) {
 			}
 			startTime := time.Now()
 
-			searchParams := search.SearchParams{From: from, To: to, DepartureDate: departureDate}
+			searchParams := search.Params{From: from, To: to, DepartureDate: departureDate}
 			respStatus, respText, err := search.GetSearchResult(client, searchParams, url)
 
 			if g.Config.LogResponsesEnabled == "1" {

@@ -9,7 +9,7 @@ import (
 	"strings"
 )
 
-type SearchParams struct {
+type Params struct {
 	From          string
 	To            string
 	DepartureDate string
@@ -31,11 +31,11 @@ type OfferDetail struct {
 	Seats int
 }
 
-type SearchResult struct {
+type Result struct {
 	Offers []Offer
 }
 
-func GetSearchResult(client *http.Client, params SearchParams, searchUrl string) (int, string, string) {
+func GetSearchResult(client *http.Client, params Params, searchUrl string) (int, string, string) {
 	request, err := http.NewRequest("GET", searchUrl, nil)
 
 	query := request.URL.Query()
@@ -61,9 +61,10 @@ func GetSearchResult(client *http.Client, params SearchParams, searchUrl string)
 		respText = "Response " + strings.Replace(string(bodyBytes), "\n", "", -1) + "\n"
 		respStatus = resp.StatusCode
 
-		//searchResult := SearchResult{}
+		//searchResult := Result{}
 		var searchResult interface{}
-		err := json.NewDecoder(resp.Body).Decode(&searchResult)
+		//err := json.NewDecoder(resp.Body).Decode(&searchResult)
+		err := json.Unmarshal(bodyBytes, &searchResult)
 
 		if err != nil {
 			fmt.Println(err.Error())
@@ -80,6 +81,6 @@ func GetSearchResult(client *http.Client, params SearchParams, searchUrl string)
 	return respStatus, respText, errorText
 }
 
-//func getOffers(resp *http.Response, target *SearchResult) error {
+//func getOffers(resp *http.Response, target *Result) error {
 //	return json.NewDecoder(resp.Body).Decode(target)
 //}
