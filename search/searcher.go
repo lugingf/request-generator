@@ -2,6 +2,7 @@ package search
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"net"
 	"net/http"
@@ -63,9 +64,11 @@ func GetSearchResult(client *http.Client, params SearchParams, searchUrl string)
 		respStatus = resp.StatusCode
 
 		searchResult := SearchResult{}
-		getOffers(resp, &searchResult)
+		json.NewDecoder(resp.Body).Decode(searchResult)
+		//getOffers(resp, &searchResult)
 
 		offersCount := len(searchResult.Offers)
+		fmt.Println(searchResult.Offers)
 		log.Logger.Info().Msg("Offers count: " + strconv.Itoa(offersCount))
 
 		defer resp.Body.Close()
@@ -74,6 +77,6 @@ func GetSearchResult(client *http.Client, params SearchParams, searchUrl string)
 	return respStatus, respText, errorText
 }
 
-func getOffers(resp *http.Response, target *SearchResult) error {
-	return json.NewDecoder(resp.Body).Decode(target)
-}
+//func getOffers(resp *http.Response, target *SearchResult) error {
+//	return json.NewDecoder(resp.Body).Decode(target)
+//}
