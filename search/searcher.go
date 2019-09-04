@@ -61,8 +61,8 @@ func GetSearchResult(client *http.Client, params Params, searchUrl string) (int,
 		respText = "Response " + strings.Replace(string(bodyBytes), "\n", "", -1) + "\n"
 		respStatus = resp.StatusCode
 
-		//searchResult := Result{}
-		var searchResult interface{}
+		searchResult := Result{}
+		//var searchResult interface{}
 		//err := json.NewDecoder(resp.Body).Decode(&searchResult)
 		err := json.Unmarshal(bodyBytes, &searchResult)
 
