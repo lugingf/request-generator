@@ -18,23 +18,23 @@ type Params struct {
 }
 
 type Offer struct {
-	From          string
-	To            string
-	CarrierName   string
-	CarrierRate   int
-	DepartureTime string
-	ArrivalTime   string
-	Id            int
-	OfferDetail   OfferDetail
+	From          string `json:"from"`
+	To            string `json:"to"`
+	CarrierName   string `json:"carrierName"`
+	CarrierRate   int `json:"carrierRate"`
+	DepartureTime string `json:"departureTime"`
+	ArrivalTime   string `json:"arrivalTime"`
+	Id            int `json:"id"`
+	OfferDetail   OfferDetail `json:"offerDetail"`
 }
 
 type OfferDetail struct {
-	Price int
-	Seats int
+	Price int `json:"price"`
+	Seats int `json:"seats"`
 }
 
 type Result struct {
-	Offers []Offer
+	Offers []Offer `json:"offers"`
 }
 
 func GetSearchResult(client *http.Client, params Params, searchUrl string) (int, string, string) {
