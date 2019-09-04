@@ -17,19 +17,19 @@ type SearchParams struct {
 }
 
 type Offer struct {
-	from          string
-	to            string
-	carrierName   string
-	carrierRate   int
-	departureTime string
-	arrivalTime   string
-	id            int
-	offerDetail   OfferDetail
+	From          string
+	To            string
+	CarrierName   string
+	CarrierRate   int
+	DepartureTime string
+	ArrivalTime   string
+	Id            int
+	OfferDetail   OfferDetail
 }
 
 type OfferDetail struct {
-	price int
-	seats int
+	Price int
+	Seats int
 }
 
 type SearchResult struct {
