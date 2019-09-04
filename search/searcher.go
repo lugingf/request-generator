@@ -6,8 +6,6 @@ import (
 	"io/ioutil"
 	"net"
 	"net/http"
-	"stash.tutu.ru/golang/log"
-	"strconv"
 	"strings"
 )
 
@@ -63,7 +61,8 @@ func GetSearchResult(client *http.Client, params SearchParams, searchUrl string)
 		respText = "Response " + strings.Replace(string(bodyBytes), "\n", "", -1) + "\n"
 		respStatus = resp.StatusCode
 
-		searchResult := SearchResult{}
+		//searchResult := SearchResult{}
+		var searchResult interface{}
 		err := json.NewDecoder(resp.Body).Decode(&searchResult)
 
 		if err != nil {
@@ -71,9 +70,9 @@ func GetSearchResult(client *http.Client, params SearchParams, searchUrl string)
 		}
 		//getOffers(resp, &searchResult)
 
-		offersCount := len(searchResult.Offers)
-		fmt.Println(searchResult.Offers)
-		log.Logger.Info().Msg("Offers count: " + strconv.Itoa(offersCount))
+		//offersCount := len(searchResult.Offers)
+		fmt.Println("RESULT: ", searchResult)
+		//log.Logger.Info().Msg("Offers count: " + strconv.Itoa(offersCount))
 
 		defer resp.Body.Close()
 	}
