@@ -6,7 +6,9 @@ import (
 	"io/ioutil"
 	"net"
 	"net/http"
+	"strconv"
 	"strings"
+	"stash.tutu.ru/golang/log"
 )
 
 type Params struct {
@@ -62,18 +64,15 @@ func GetSearchResult(client *http.Client, params Params, searchUrl string) (int,
 		respStatus = resp.StatusCode
 
 		searchResult := Result{}
-		//var searchResult interface{}
-		//err := json.NewDecoder(resp.Body).Decode(&searchResult)
 		err := json.Unmarshal(bodyBytes, &searchResult)
 
 		if err != nil {
 			fmt.Println(err.Error())
 		}
-		//getOffers(resp, &searchResult)
 
-		//offersCount := len(searchResult.Offers)
+		offersCount := len(searchResult.Offers)
 		fmt.Println("RESULT: ", searchResult)
-		//log.Logger.Info().Msg("Offers count: " + strconv.Itoa(offersCount))
+		log.Logger.Info().Msg("Offers count: " + strconv.Itoa(offersCount))
 
 		defer resp.Body.Close()
 	}
@@ -81,6 +80,3 @@ func GetSearchResult(client *http.Client, params Params, searchUrl string) (int,
 	return respStatus, respText, errorText
 }
 
-//func getOffers(resp *http.Response, target *Result) error {
-//	return json.NewDecoder(resp.Body).Decode(target)
-//}
