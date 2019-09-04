@@ -64,7 +64,11 @@ func GetSearchResult(client *http.Client, params SearchParams, searchUrl string)
 		respStatus = resp.StatusCode
 
 		searchResult := SearchResult{}
-		json.NewDecoder(resp.Body).Decode(searchResult)
+		err := json.NewDecoder(resp.Body).Decode(searchResult)
+
+		if err != nil {
+			fmt.Println(err.Error())
+		}
 		//getOffers(resp, &searchResult)
 
 		offersCount := len(searchResult.Offers)
