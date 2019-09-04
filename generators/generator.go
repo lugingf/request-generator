@@ -1,14 +1,13 @@
 package generators
 
 import (
-	"io/ioutil"
 	"math"
 	"math/rand"
-	"net"
 	"net/http"
 	"stash.tutu.ru/golang/log"
 	"stash.tutu.ru/opscore-workshop-admin/request-generator/metrics"
 	"stash.tutu.ru/opscore-workshop-admin/request-generator/resources"
+	"stash.tutu.ru/opscore-workshop-admin/request-generator/search"
 	"strconv"
 	"strings"
 	"time"
@@ -70,47 +69,21 @@ func (g *RequestGenerator) MakeGen(ch chan resources.ChangedNode) {
 func (g *RequestGenerator) doRequest(client *http.Client, urlData []string) {
 	for _, url := range urlData {
 		go func(url string) {
-			request, err := http.NewRequest("GET", url, nil)
-
-			query := request.URL.Query()
 			from, to, departureDate := getRequestData()
-
 			if g.Config.IsBadRequestsEnabled == "1" {
 				from, to, departureDate = getFailedRequestData()
 			}
-
-			query.Add("from", from)
-			query.Add("to", to)
-			query.Add("date", departureDate)
-			request.URL.RawQuery = query.Encode()
-
 			startTime := time.Now()
 
-			resp, err := client.Do(request)
-
-			respStatus := http.StatusOK
-			var respText string
-			var errorText string
-
-			if err, ok := err.(net.Error); ok && err.Timeout() {
-				errorText = "Got Timeout ERROR: " + error.Error(err)
-				respStatus = http.StatusGatewayTimeout
-			} else if err != nil {
-				errorText = "Got ERROR: " + error.Error(err)
-				respStatus = http.StatusInternalServerError
-			} else {
-				bodyBytes, _ := ioutil.ReadAll(resp.Body)
-				respText = "Response " + strings.Replace(string(bodyBytes), "\n", "", -1) + "\n"
-				respStatus = resp.StatusCode
-				defer resp.Body.Close()
-			}
+			searchParams := search.SearchParams{From: from, To: to, DepartureDate: departureDate}
+			respStatus, respText, err := search.GetSearchResult(client, searchParams, url)
 
 			if g.Config.LogResponsesEnabled == "1" {
 				log.Logger.Info().Msg(respText)
 			}
 
-			if errorText != "" {
-				log.Logger.Info().Msg(errorText)
+			if err != "" {
+				log.Logger.Info().Msg(err)
 			}
 
 			metrics.SendDurationMetric(url, respStatus, startTime)
