@@ -64,7 +64,7 @@ func GetSearchResult(client *http.Client, params SearchParams, searchUrl string)
 		respStatus = resp.StatusCode
 
 		searchResult := SearchResult{}
-		err := json.NewDecoder(resp.Body).Decode(searchResult)
+		err := json.NewDecoder(resp.Body).Decode(&searchResult)
 
 		if err != nil {
 			fmt.Println(err.Error())
