@@ -77,7 +77,7 @@ func GetSearchResult(client *http.Client, params Params, target string) (string,
 		err := json.Unmarshal(bodyBytes, &searchResult)
 
 		if err != nil {
-			log.Logger.Info().Msg("Got resp parsing error: " + err.Error() + requestId)
+			log.Logger.Info().Msg("Got resp parsing error: " + err.Error() + " from " + target + requestId)
 		}
 
 		offersCount := len(searchResult.Offers)
