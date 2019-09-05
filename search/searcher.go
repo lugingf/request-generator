@@ -6,10 +6,10 @@ import (
 	"io/ioutil"
 	"net"
 	"net/http"
+	"stash.tutu.ru/golang/log"
 	"stash.tutu.ru/opscore-workshop-admin/request-generator/metrics"
 	"strconv"
 	"strings"
-	"stash.tutu.ru/golang/log"
 )
 
 type Params struct {
@@ -19,13 +19,13 @@ type Params struct {
 }
 
 type Offer struct {
-	From          string `json:"from"`
-	To            string `json:"to"`
-	CarrierName   string `json:"carrierName"`
-	CarrierRate   int `json:"carrierRate"`
-	DepartureTime string `json:"departureTime"`
-	ArrivalTime   string `json:"arrivalTime"`
-	Id            int `json:"id"`
+	From          string      `json:"from"`
+	To            string      `json:"to"`
+	CarrierName   string      `json:"carrierName"`
+	CarrierRate   int         `json:"carrierRate"`
+	DepartureTime string      `json:"departureTime"`
+	ArrivalTime   string      `json:"arrivalTime"`
+	Id            int         `json:"id"`
 	OfferDetail   OfferDetail `json:"offerDetail"`
 }
 
@@ -80,4 +80,3 @@ func GetSearchResult(client *http.Client, params Params, searchUrl string) (int,
 
 	return respStatus, respText, errorText
 }
-
