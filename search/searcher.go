@@ -50,7 +50,7 @@ func GetSearchResult(client *http.Client, params Params, target string) (string,
 	query.Add("to", params.To)
 	query.Add("date", params.DepartureDate)
 	request.URL.RawQuery = query.Encode()
-	requestId := " RequestId: "+ strconv.Itoa(rand.Intn(10000))
+	requestId := " RequestId: "+ strconv.Itoa(rand.Intn(1000000))
 	log.Logger.Info().Msg("Send request to " + target + " Params: " + request.URL.RawQuery + requestId)
 
 	startTime := time.Now()
