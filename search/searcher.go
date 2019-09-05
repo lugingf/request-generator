@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"net"
 	"net/http"
+	"os"
 	"stash.tutu.ru/golang/log"
 	"stash.tutu.ru/opscore-workshop-admin/request-generator/metrics"
 	"strconv"
@@ -38,8 +39,10 @@ type Result struct {
 	Offers []Offer `json:"offers"`
 }
 
-func GetSearchResult(client *http.Client, params Params, searchUrl string) (int, string, string) {
-	request, err := http.NewRequest("GET", searchUrl, nil)
+func GetSearchResult(client *http.Client, params Params, target string) (int, string, string) {
+	baseUrlParts := strings.Split(os.Getenv("BASE_SEARCH_URL"), ",")
+	targetUrl := baseUrlParts[0] + target + baseUrlParts[1]
+	request, err := http.NewRequest("GET", targetUrl, nil)
 
 	query := request.URL.Query()
 	query.Add("from", params.From)
@@ -72,7 +75,7 @@ func GetSearchResult(client *http.Client, params Params, searchUrl string) (int,
 		}
 
 		offersCount := len(searchResult.Offers)
-		metrics.SendOffersCountMetric(searchUrl, float64(offersCount))
+		metrics.SendOffersCountMetric(target, float64(offersCount))
 		log.Logger.Info().Msg("Offers count: " + strconv.Itoa(offersCount))
 
 		defer resp.Body.Close()

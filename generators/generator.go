@@ -4,7 +4,6 @@ import (
 	"math"
 	"math/rand"
 	"net/http"
-	"os"
 	"stash.tutu.ru/golang/log"
 	"stash.tutu.ru/opscore-workshop-admin/request-generator/metrics"
 	"stash.tutu.ru/opscore-workshop-admin/request-generator/resources"
@@ -77,9 +76,7 @@ func (g *RequestGenerator) doRequest(client *http.Client, urlData []string) {
 			startTime := time.Now()
 
 			searchParams := search.Params{From: from, To: to, DepartureDate: departureDate}
-			baseUrlParts := strings.Split(os.Getenv("BASE_SEARCH_URL"), ",")
-			targetUrl := baseUrlParts[0] + target + baseUrlParts[1]
-			respStatus, respText, err := search.GetSearchResult(client, searchParams, targetUrl)
+			respStatus, respText, err := search.GetSearchResult(client, searchParams, target)
 
 			if g.Config.LogResponsesEnabled == "1" {
 				log.Logger.Info().Msg(respText)
