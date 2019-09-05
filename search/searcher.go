@@ -73,16 +73,19 @@ func GetSearchResult(client *http.Client, params Params, target string) (string,
 		respText = "Response " + strings.Replace(string(bodyBytes), "\n", "", -1) + requestId
 		respStatus = resp.StatusCode
 
+
 		searchResult := Result{}
-		err := json.Unmarshal(bodyBytes, &searchResult)
 
-		if err != nil {
-			log.Logger.Info().Msg("Got resp parsing error: " + err.Error() + " from " + target + requestId)
-		}
+		go func(searchResult Result, target string, requestId string) {
+			err := json.Unmarshal(bodyBytes, &searchResult)
 
-		offersCount := len(searchResult.Offers)
-		metrics.SendOffersCountMetric(target, float64(offersCount))
-		log.Logger.Info().Msg("Offers count from "+ target + " Count: " + strconv.Itoa(offersCount) + requestId)
+			if err != nil {
+				log.Logger.Info().Msg("Got resp parsing error: " + err.Error() + " from " + target + requestId)
+			}
+			offersCount := len(searchResult.Offers)
+			metrics.SendOffersCountMetric(target, float64(offersCount))
+			log.Logger.Info().Msg("Offers count from "+ target + " Count: " + strconv.Itoa(offersCount) + requestId)
+		}(searchResult, target, requestId)
 
 		defer resp.Body.Close()
 	}
