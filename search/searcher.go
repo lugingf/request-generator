@@ -51,27 +51,27 @@ func GetSearchResult(client *http.Client, params Params, target string) (string,
 	query.Add("to", params.To)
 	query.Add("date", params.DepartureDate)
 	request.URL.RawQuery = query.Encode()
-	requestId := strconv.Itoa(rand.Intn(10000))
-	log.Logger.Info().Msg("Send request to " + target + " Params: " + request.URL.RawQuery + " RequestId: " + requestId)
+	requestId := " RequestId: "+ strconv.Itoa(rand.Intn(10000))
+	log.Logger.Info().Msg("Send request to " + target + " Params: " + request.URL.RawQuery + requestId)
 
 	startTime := time.Now()
 	resp, err := client.Do(request)
 
-	log.Logger.Info().Msg("Finish request to " + target + " RequestId: " + requestId)
+	log.Logger.Info().Msg("Finish request to " + target + requestId)
 
 	respStatus := http.StatusOK
 	var respText string
 	var errorText string
 
 	if err, ok := err.(net.Error); ok && err.Timeout() {
-		errorText = "Got Timeout ERROR: " + error.Error(err)
+		errorText = "Got Timeout ERROR: " + error.Error(err) +  requestId
 		respStatus = http.StatusGatewayTimeout
 	} else if err != nil {
-		errorText = "Got ERROR: " + error.Error(err)
+		errorText = "Got ERROR: " + error.Error(err) + requestId
 		respStatus = http.StatusInternalServerError
 	} else {
 		bodyBytes, _ := ioutil.ReadAll(resp.Body)
-		respText = "Response " + strings.Replace(string(bodyBytes), "\n", "", -1) + "\n"
+		respText = "Response " + strings.Replace(string(bodyBytes), "\n", "", -1) + requestId
 		respStatus = resp.StatusCode
 
 		searchResult := Result{}
@@ -83,7 +83,7 @@ func GetSearchResult(client *http.Client, params Params, target string) (string,
 
 		offersCount := len(searchResult.Offers)
 		metrics.SendOffersCountMetric(target, float64(offersCount))
-		log.Logger.Info().Msg("Offers count from: "+ target + " Count: " + strconv.Itoa(offersCount) + " RequestId: " + requestId)
+		log.Logger.Info().Msg("Offers count from: "+ target + " Count: " + strconv.Itoa(offersCount) + requestId)
 
 		defer resp.Body.Close()
 	}
