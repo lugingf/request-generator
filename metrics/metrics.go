@@ -13,8 +13,13 @@ const SearchResponsesDurationMetricLabelResponseCode string = "response_code"
 const SearchOffersCountMetricName string = "ocws_request_generator_search_offers_count"
 const SearchOffersCountMetricLabelTarget string = "target"
 
+const SearchOffersPriceMetricName string = "ocws_request_generator_search_offers_count"
+const SearchOffersPriceMetricLabelTarget string = "target"
+const SearchOffersPriceMetricLabelCarrier string = "carrier"
+
 var SearchResponsesDurationSummaryVec *prometheus.SummaryVec
 var SearchOffersCountCounterVec *prometheus.CounterVec
+var SearchOffersPriceCounterVec *prometheus.CounterVec
 
 func Init() {
 	SearchResponsesDurationSummaryVec = prometheus.NewSummaryVec(
@@ -30,9 +35,16 @@ func Init() {
 		},
 		[]string{SearchOffersCountMetricLabelTarget},
 	)
+	SearchOffersPriceCounterVec = prometheus.NewCounterVec(
+		prometheus.CounterOpts{
+			Name: SearchOffersPriceMetricName,
+		},
+		[]string{SearchOffersPriceMetricLabelTarget, SearchOffersPriceMetricLabelCarrier},
+	)
 
 	prometheus.MustRegister(SearchResponsesDurationSummaryVec)
 	prometheus.MustRegister(SearchOffersCountCounterVec)
+	prometheus.MustRegister(SearchOffersPriceCounterVec)
 }
 
 func SendDurationMetric(url string, statusCode int, startTime time.Time) {
@@ -41,4 +53,8 @@ func SendDurationMetric(url string, statusCode int, startTime time.Time) {
 
 func SendOffersCountMetric(url string, countValue float64) {
 	SearchOffersCountCounterVec.With(prometheus.Labels{SearchOffersCountMetricLabelTarget: url}).Add(countValue)
+}
+
+func SendOffersPriceMetric(url string, carrier string, countValue float64) {
+	SearchOffersPriceCounterVec.With(prometheus.Labels{SearchOffersPriceMetricLabelTarget: url, SearchOffersPriceMetricLabelCarrier: carrier}).Add(countValue)
 }

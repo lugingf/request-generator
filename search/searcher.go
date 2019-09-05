@@ -82,6 +82,7 @@ func GetSearchResult(client *http.Client, params Params, target string) (string,
 			}
 			offersCount := len(searchResult.Offers)
 			metrics.SendOffersCountMetric(target, float64(offersCount))
+			sendPriceStats(searchResult, target)
 			log.Logger.Info().Msg("Offers count from "+ target + " Count: " + strconv.Itoa(offersCount) + requestId)
 		}()
 
@@ -90,4 +91,10 @@ func GetSearchResult(client *http.Client, params Params, target string) (string,
 	metrics.SendDurationMetric(target, respStatus, startTime)
 
 	return respText, errorText
+}
+
+func sendPriceStats(searchResult Result, target string)  {
+	for _, offer := range searchResult.Offers {
+		metrics.SendOffersPriceMetric(target, offer.CarrierName, float64(offer.OfferDetail.Price))
+	}
 }
