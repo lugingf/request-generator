@@ -80,10 +80,7 @@ func GetSearchResult(client *http.Client, params Params, target string) (string,
 			if err != nil {
 				log.Logger.Info().Msg("Got resp parsing error: " + err.Error() + " from " + target + requestId)
 			}
-			offersCount := len(searchResult.Offers)
-			metrics.SendOffersCountMetric(target, float64(offersCount))
-			sendPriceStats(searchResult, target)
-			log.Logger.Info().Msg("Offers count from "+ target + " Count: " + strconv.Itoa(offersCount) + requestId)
+			sendSearchStats(searchResult, target, requestId)
 		}()
 
 		defer resp.Body.Close()
@@ -93,8 +90,13 @@ func GetSearchResult(client *http.Client, params Params, target string) (string,
 	return respText, errorText
 }
 
-func sendPriceStats(searchResult Result, target string)  {
+func sendSearchStats(searchResult Result, target string, requestId string)  {
+	counter := 0
 	for _, offer := range searchResult.Offers {
 		metrics.SendOffersPriceMetric(target, offer.CarrierName, float64(offer.OfferDetail.Price))
+		metrics.SendOffersCountMetric(target, offer.CarrierName, float64(1))
+		counter = counter + 1
 	}
+	log.Logger.Info().Msg("Offers count from "+ target + " Count: " + strconv.Itoa(counter) + requestId)
 }
+
