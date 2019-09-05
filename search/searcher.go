@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"math/rand"
 	"net"
 	"net/http"
 	"os"
@@ -50,9 +51,13 @@ func GetSearchResult(client *http.Client, params Params, target string) (string,
 	query.Add("to", params.To)
 	query.Add("date", params.DepartureDate)
 	request.URL.RawQuery = query.Encode()
+	requestId := strconv.Itoa(rand.Intn(10000))
+	log.Logger.Info().Msg("Send request to " + target + " Params: " + request.URL.RawQuery + " RequestId: " + requestId)
 
 	startTime := time.Now()
 	resp, err := client.Do(request)
+
+	log.Logger.Info().Msg("Finish request to " + target + " RequestId: " + requestId)
 
 	respStatus := http.StatusOK
 	var respText string
@@ -78,7 +83,7 @@ func GetSearchResult(client *http.Client, params Params, target string) (string,
 
 		offersCount := len(searchResult.Offers)
 		metrics.SendOffersCountMetric(target, float64(offersCount))
-		log.Logger.Info().Msg("Offers count: " + strconv.Itoa(offersCount))
+		log.Logger.Info().Msg("Offers count from: "+ target + " Count: " + strconv.Itoa(offersCount) + " RequestId: " + requestId)
 
 		defer resp.Body.Close()
 	}
