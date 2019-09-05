@@ -4,6 +4,7 @@ import (
 	"math"
 	"math/rand"
 	"net/http"
+	"os"
 	"stash.tutu.ru/golang/log"
 	"stash.tutu.ru/opscore-workshop-admin/request-generator/metrics"
 	"stash.tutu.ru/opscore-workshop-admin/request-generator/resources"
@@ -49,7 +50,7 @@ func (g *RequestGenerator) MakeGen(ch chan resources.ChangedNode) {
 				g.Config.GenRequestTimeout = changedNode.Value
 				timeout := getDurationTypeFromString(g.Config.GenRequestTimeout)
 				client.Timeout = timeout * time.Millisecond
-				log.Logger.Info().Msg(configChangedMessage + "Parameter request timeot was changed to " + g.Config.GenRequestTimeout)
+				log.Logger.Info().Msg(configChangedMessage + "Parameter request timeout was changed to " + g.Config.GenRequestTimeout)
 			case "UrlTargetList":
 				g.Config.UrlTargetList = strings.Split(changedNode.Value, ",")
 				log.Logger.Info().Msg(configChangedMessage + "URL target list was updated to " + changedNode.Value)
@@ -67,8 +68,8 @@ func (g *RequestGenerator) MakeGen(ch chan resources.ChangedNode) {
 }
 
 func (g *RequestGenerator) doRequest(client *http.Client, urlData []string) {
-	for _, url := range urlData {
-		go func(url string) {
+	for _, target := range urlData {
+		go func(target string) {
 			from, to, departureDate := getRequestData()
 			if g.Config.IsBadRequestsEnabled == "1" {
 				from, to, departureDate = getFailedRequestData()
@@ -76,7 +77,9 @@ func (g *RequestGenerator) doRequest(client *http.Client, urlData []string) {
 			startTime := time.Now()
 
 			searchParams := search.Params{From: from, To: to, DepartureDate: departureDate}
-			respStatus, respText, err := search.GetSearchResult(client, searchParams, url)
+			baseUrlParts := strings.Split(os.Getenv("BASE_SEARCH_URL"), ",")
+			targetUrl := baseUrlParts[0] + target + baseUrlParts[1]
+			respStatus, respText, err := search.GetSearchResult(client, searchParams, targetUrl)
 
 			if g.Config.LogResponsesEnabled == "1" {
 				log.Logger.Info().Msg(respText)
@@ -86,8 +89,8 @@ func (g *RequestGenerator) doRequest(client *http.Client, urlData []string) {
 				log.Logger.Info().Msg(err)
 			}
 
-			metrics.SendDurationMetric(url, respStatus, startTime)
-		}(url)
+			metrics.SendDurationMetric(target, respStatus, startTime)
+		}(target)
 	}
 }
 
