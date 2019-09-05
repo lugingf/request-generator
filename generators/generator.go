@@ -78,7 +78,7 @@ func (g *RequestGenerator) doRequest(client *http.Client, urlData []string) {
 			respText, err := search.GetSearchResult(client, searchParams, target)
 
 			if g.Config.LogResponsesEnabled == "1" {
-				log.Logger.Info().Msg(respText)
+				log.Logger.Info().Msg(respText + " " + target)
 			}
 
 			if err != "" {
