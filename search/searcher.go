@@ -63,7 +63,7 @@ func GetSearchResult(client *http.Client, params Params, target string) (string,
 	var errorText string
 
 	if err, ok := err.(net.Error); ok && err.Timeout() {
-		errorText = "Got Timeout ERROR: " + error.Error(err) +  requestId
+		errorText = "Got Timeout ERROR: " + error.Error(err) +  requestId + "Timeout was: " + strconv.Itoa(int(client.Timeout))
 		respStatus = http.StatusGatewayTimeout
 	} else if err != nil {
 		errorText = "Got ERROR: " + error.Error(err) + requestId
