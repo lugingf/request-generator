@@ -73,10 +73,8 @@ func GetSearchResult(client *http.Client, params Params, target string) (string,
 		respText = "Response " + strings.Replace(string(bodyBytes), "\n", "", -1) + requestId
 		respStatus = resp.StatusCode
 
-
 		searchResult := Result{}
-
-		go func(searchResult Result, target string, requestId string) {
+		go func() {
 			err := json.Unmarshal(bodyBytes, &searchResult)
 
 			if err != nil {
@@ -85,7 +83,7 @@ func GetSearchResult(client *http.Client, params Params, target string) (string,
 			offersCount := len(searchResult.Offers)
 			metrics.SendOffersCountMetric(target, float64(offersCount))
 			log.Logger.Info().Msg("Offers count from "+ target + " Count: " + strconv.Itoa(offersCount) + requestId)
-		}(searchResult, target, requestId)
+		}()
 
 		defer resp.Body.Close()
 	}
