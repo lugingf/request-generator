@@ -13,7 +13,7 @@ const SearchResponsesDurationMetricLabelResponseCode string = "response_code"
 const SearchOffersCountMetricName string = "ocws_request_generator_search_offers_count"
 const SearchOffersCountMetricLabelTarget string = "target"
 
-const SearchOffersPriceMetricName string = "ocws_request_generator_search_offers_count"
+const SearchOffersPriceMetricName string = "ocws_request_generator_search_offers_price"
 const SearchOffersPriceMetricLabelTarget string = "target"
 const SearchOffersPriceMetricLabelCarrier string = "carrier"
 
