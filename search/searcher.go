@@ -2,7 +2,6 @@ package search
 
 import (
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"math/rand"
 	"net"
@@ -78,12 +77,12 @@ func GetSearchResult(client *http.Client, params Params, target string) (string,
 		err := json.Unmarshal(bodyBytes, &searchResult)
 
 		if err != nil {
-			fmt.Println(err.Error())
+			log.Logger.Info().Msg("Got resp parsing error: " + err.Error() + requestId)
 		}
 
 		offersCount := len(searchResult.Offers)
 		metrics.SendOffersCountMetric(target, float64(offersCount))
-		log.Logger.Info().Msg("Offers count from: "+ target + " Count: " + strconv.Itoa(offersCount) + requestId)
+		log.Logger.Info().Msg("Offers count from "+ target + " Count: " + strconv.Itoa(offersCount) + requestId)
 
 		defer resp.Body.Close()
 	}
