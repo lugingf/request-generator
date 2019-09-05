@@ -5,7 +5,6 @@ import (
 	"math/rand"
 	"net/http"
 	"stash.tutu.ru/golang/log"
-	"stash.tutu.ru/opscore-workshop-admin/request-generator/metrics"
 	"stash.tutu.ru/opscore-workshop-admin/request-generator/resources"
 	"stash.tutu.ru/opscore-workshop-admin/request-generator/search"
 	"strconv"
@@ -73,10 +72,10 @@ func (g *RequestGenerator) doRequest(client *http.Client, urlData []string) {
 			if g.Config.IsBadRequestsEnabled == "1" {
 				from, to, departureDate = getFailedRequestData()
 			}
-			startTime := time.Now()
 
 			searchParams := search.Params{From: from, To: to, DepartureDate: departureDate}
-			respStatus, respText, err := search.GetSearchResult(client, searchParams, target)
+
+			respText, err := search.GetSearchResult(client, searchParams, target)
 
 			if g.Config.LogResponsesEnabled == "1" {
 				log.Logger.Info().Msg(respText)
@@ -86,7 +85,6 @@ func (g *RequestGenerator) doRequest(client *http.Client, urlData []string) {
 				log.Logger.Info().Msg(err)
 			}
 
-			metrics.SendDurationMetric(target, respStatus, startTime)
 		}(target)
 	}
 }

@@ -11,6 +11,7 @@ import (
 	"stash.tutu.ru/opscore-workshop-admin/request-generator/metrics"
 	"strconv"
 	"strings"
+	"time"
 )
 
 type Params struct {
@@ -39,7 +40,7 @@ type Result struct {
 	Offers []Offer `json:"offers"`
 }
 
-func GetSearchResult(client *http.Client, params Params, target string) (int, string, string) {
+func GetSearchResult(client *http.Client, params Params, target string) (string, string) {
 	baseUrlParts := strings.Split(os.Getenv("BASE_SEARCH_URL"), ",")
 	targetUrl := baseUrlParts[0] + target + baseUrlParts[1]
 	request, err := http.NewRequest("GET", targetUrl, nil)
@@ -50,6 +51,7 @@ func GetSearchResult(client *http.Client, params Params, target string) (int, st
 	query.Add("date", params.DepartureDate)
 	request.URL.RawQuery = query.Encode()
 
+	startTime := time.Now()
 	resp, err := client.Do(request)
 
 	respStatus := http.StatusOK
@@ -80,6 +82,7 @@ func GetSearchResult(client *http.Client, params Params, target string) (int, st
 
 		defer resp.Body.Close()
 	}
+	metrics.SendDurationMetric(target, respStatus, startTime)
 
-	return respStatus, respText, errorText
+	return respText, errorText
 }
