@@ -108,8 +108,8 @@ func getRequestData() (string, string, string) {
 	departureTimestamp := rand.Int63n(60*60*24*(45)) + time.Now().Unix() + 60*60*24*14
 	departureDate := time.Unix(departureTimestamp, 0).Format("2006-01-02")
 
-	departureId := rand.Intn(citiesCount - 1) + 1
-	arrivalId := rand.Intn(citiesCount -1) + 1
+	departureId := rand.Intn(citiesCount) + 1
+	arrivalId := rand.Intn(citiesCount) + 1
 
 	return strconv.Itoa(departureId), strconv.Itoa(arrivalId), departureDate
 }
